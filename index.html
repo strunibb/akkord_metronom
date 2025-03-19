@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Генератор аккордов | Струны Будущего</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #6c757d;
+            --accent: #ff6b6b;
+            --text: #333333;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #ffffff;
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: var(--card-bg);
+            border: 2px solid #e0e0e0;
+            color: var(--text);
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+            z-index: 100;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid #eeeeee;
+        }
+
+        h1, h2, h3, h4 {
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .chord-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.6rem;
+            margin: 1.2rem 0;
+        }
+
+        .chord-btn {
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            color: var(--text);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .chord-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(0.98);
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin: 1.2rem 0;
+        }
+
+        select, button {
+            padding: 0.8rem 1.2rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        button.secondary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        button.danger {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        #currentChord {
+            font-size: 2.5rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: 700;
+            color: var(--primary);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chord-pill {
+            background: #f8f9fa;
+            color: var(--text);
+            padding: 0.4rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            #currentChord {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="audioAlert" class="card" style="display: none; position: fixed; top: 20px; left: 20px; right: 20px; z-index: 1000;">
+            <h3>🔊 Включите звук</h3>
+            <p>Для работы приложения нажмите кнопку ниже</p>
+            <button onclick="enableAudio()" class="secondary">Активировать звук</button>
+        </div>
+
+        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+
+        <div class="card">
+            <h1>🎸 Струны Будущего</h1>
+            <p>Привет от Никиты из онлайн-школы "Струны будущего"! Выбирай время таймера, нужные аккорды и интервал между ними. Ты все сможешь! 🎶</p>
+        </div>
+
+        <div id="currentChord"></div>
+
+        <div class="card">
+            <div class="settings-group">
+                <h3>⚙️ Настройки тренировки</h3>
+                <div class="order-mode">
+                    <label>
+                        <input type="radio" name="order" value="random" checked>
+                        <span>🎲 Случайный порядок</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="order" value="manual">
+                        <span>✏️ Ручной порядок</span>
+                    </label>
+                </div>
+                <div class="controls">
+                    <select id="timer">
+                        <option value="2">2 мин</option>
+                        <option value="4">4 мин</option>
+                        <option value="6">6 мин</option>
+                        <option value="10">10 мин</option>
+                    </select>
+                    <select id="interval">
+                        <option value="2">2 сек</option>
+                        <option value="3">3 сек</option>
+                        <option value="4">4 сек</option>
+                        <option value="5">5 сек</option>
+                        <option value="6">6 сек</option>
+                        <option value="7">7 сек</option>
+                        <option value="8">8 сек</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="selectedOrder" style="display: none;">
+                <h4>Выбранные аккорды:</h4>
+                <div id="selectedChordsList"></div>
+                <p class="hint">ℹ️ Кликайте аккорды в нужном порядке</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>🎵 Выбери аккорды</h3>
+                <div class="chord-grid" id="chordButtons"></div>
+            </div>
+
+            <div class="controls">
+                <button onclick="startTraining()" class="secondary">🚀 Начать тренировку</button>
+                <button onclick="stopTraining()" class="danger">⏹ Остановить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chords = ['A','Am','A7','B','Bm','C','Cm','D','Dm','D7','E','Em','F','Fm','F7','G','Gm','G'];
+        let trainingInterval = null;
+        let trainingTimeout = null;
+        let audioContext = null;
+        let selectedChords = [];
+        let audioAllowed = false;
+
+        async function enableAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                oscillator.connect(audioContext.destination);
+                oscillator.start(0);
+                oscillator.stop(0.001);
+                await audioContext.resume();
+                document.getElementById('audioAlert').style.display = 'none';
+                audioAllowed = true;
+                playSound(440);
+            } catch(e) {
+                alert('Ошибка инициализации звука: ' + e.message);
+            }
+        }
+
+        function playSound(freq) {
+            if(!audioAllowed || !audioContext) return;
+            
+            try {
+                const now = audioContext.currentTime;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.1);
+                
+                if(audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            } catch(e) {
+                console.error('Audio error:', e);
+                audioAllowed = false;
+            }
+        }
+
+        function initChords() {
+            const container = document.getElementById('chordButtons');
+            chords.forEach(chord => {
+                const btn = document.createElement('button');
+                btn.className = 'chord-btn';
+                btn.textContent = chord;
+                btn.addEventListener('click', handleChordClick);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleChordClick(e) {
+            const btn = e.currentTarget;
+            btn.classList.toggle('active');
+            const chord = btn.textContent;
+            
+            const index = selectedChords.indexOf(chord);
+            if (index === -1) {
+                selectedChords.push(chord);
+            } else {
+                selectedChords.splice(index, 1);
+            }
+            updateSelectedChordsList();
+        }
+
+        function updateSelectedChordsList() {
+            const list = document.getElementById('selectedChordsList');
+            list.innerHTML = '';
+            selectedChords.forEach((chord, index) => {
+                const pill = document.createElement('div');
+                pill.className = 'chord-pill';
+                pill.innerHTML = `<span>${index + 1}.</span><span>${chord}</span>`;
+                list.appendChild(pill);
+            });
+        }
+
+        async function startTraining() {
+            stopTraining();
+            
+            if (!audioAllowed) {
+                alert('Сначала активируйте звук!');
+                return;
+            }
+            
+            if(selectedChords.length === 0) return alert('Выберите аккорды!');
+            
+            const orderMode = document.querySelector('input[name="order"]:checked').value;
+            let chordsArray = orderMode === 'random' ? 
+                shuffleArray([...selectedChords]) : 
+                [...selectedChords];
+            
+            const duration = document.getElementById('timer').value * 60000;
+            const interval = document.getElementById('interval').value * 1000;
+            
+            let index = 0;
+            document.getElementById('currentChord').textContent = chordsArray[0];
+            playSound(587.33);
+            
+            trainingInterval = setInterval(() => {
+                index = (index + 1) % chordsArray.length;
+                document.getElementById('currentChord').textContent = chordsArray[index];
+                playSound(587.33);
+            }, interval);
+
+            trainingTimeout = setTimeout(() => stopTraining(), duration);
+        }
+
+        function stopTraining() {
+            clearInterval(trainingInterval);
+            clearTimeout(trainingTimeout);
+            document.getElementById('currentChord').textContent = '';
+        }
+
+        function shuffleArray(array) {
+            for(let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+        }
+
+        document.querySelectorAll('input[name="order"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.getElementById('selectedOrder').style.display = 
+                    radio.value === 'manual' ? 'block' : 'none';
+            });
+        });
+
+        window.onload = () => {
+            initChords();
+            document.getElementById('audioAlert').style.display = 'block';
+        };
+    </script>
+</body>
+</html>
