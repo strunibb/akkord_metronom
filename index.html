@@ -4,209 +4,664 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Генератор аккордов | Струны Будущего</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700&display=swap');
+
         :root {
-            --primary: #4a90e2;
-            --secondary: #6c757d;
-            --accent: #ff6b6b;
-            --text: #333333;
-            --card-bg: #ffffff;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #94a3b8;
+            --accent: #f43f5e;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --gradient: linear-gradient(135deg, #6366f1 0%, #f43f5e 100%);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            transition: all 0.2s ease;
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: #ffffff;
-            color: var(--text);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+            color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;
             padding: 1rem;
+            animation: fadeIn 0.5s ease-out;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            background: var(--card-bg);
-            border: 2px solid #e0e0e0;
-            color: var(--text);
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            display: grid;
-            place-items: center;
-            font-size: 1.2rem;
-            z-index: 100;
+            padding-bottom: 90px;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 1rem;
-            padding: 1.5rem;
+            border-radius: 1.5rem;
+            padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid #eeeeee;
+            box-shadow: var(--shadow-lg);
+            border: none;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.05) 0%, rgba(244,63,94,0.05) 100%);
+            transform: rotate(30deg);
+            z-index: -1;
         }
 
         h1, h2, h3, h4 {
             margin-bottom: 1.2rem;
-            font-weight: 600;
-            color: var(--text);
+            font-weight: 700;
+            color: var(--dark);
         }
 
         h1 {
-            font-size: 1.8rem;
-            color: var(--primary);
+            font-size: 2rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+            margin-bottom: 0.8rem;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: -0.5px;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60%;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
         }
 
         .chord-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 0.6rem;
-            margin: 1.2rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 0.8rem;
+            margin: 1rem 0;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) rgba(99, 102, 241, 0.1);
+        }
+
+        .chord-grid::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+
+        .chord-grid::-webkit-scrollbar-track {
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+        }
+
+        .chord-grid::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 10px;
         }
 
         .chord-btn {
-            padding: 0.8rem;
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            color: var(--text);
-            border-radius: 0.75rem;
+            padding: 0.8rem 0.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: var(--dark);
+            border-radius: 1rem;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.3s;
             font-size: 1rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            min-width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+        }
+
+        .chord-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .chord-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .chord-btn:hover::before {
+            opacity: 1;
         }
 
         .chord-btn.active {
             background: var(--primary);
             border-color: var(--primary);
             color: white;
-            transform: scale(0.98);
+            transform: scale(0.98) translateY(0);
+            box-shadow: 0 4px 20px -5px rgba(99, 102, 241, 0.6);
+            animation: pulse 1.5s infinite;
+        }
+
+        .chord-btn.active::before {
+            opacity: 1;
         }
 
         .controls {
             display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-            margin: 1.2rem 0;
+            gap: 1rem;
+            margin: 1.5rem 0;
         }
 
         select, button {
-            padding: 0.8rem 1.2rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e0e0e0;
+            padding: 1rem 1.2rem;
+            border-radius: 1rem;
+            border: 2px solid #e2e8f0;
             background: white;
-            color: var(--text);
+            color: var(--dark);
             font-weight: 600;
             cursor: pointer;
-            width: 100%;
             font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+            flex: 1;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231e293b'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        select:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        button:not(.theme-toggle) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
         }
 
         button.secondary {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button.secondary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.3) 50%, 
+                rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            transition: all 0.7s;
+            opacity: 0;
+        }
+
+        button.secondary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        button.secondary:hover::before {
+            opacity: 1;
+            left: 100%;
         }
 
         button.danger {
-            background: #ef4444;
+            background: var(--accent);
             color: white;
-            border-color: #ef4444;
+            border-color: var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button.danger:hover {
+            background: #e11d48;
+            border-color: #e11d48;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px -5px rgba(244, 63, 94, 0.4);
         }
 
         #currentChord {
-            font-size: 2.5rem;
+            font-size: 4rem;
             text-align: center;
             margin: 1rem 0;
-            font-weight: 700;
-            color: var(--primary);
-            min-height: 80px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.5s ease-out;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        #currentChord::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
         }
 
         .chord-pill {
-            background: #f8f9fa;
-            color: var(--text);
-            padding: 0.4rem 0.8rem;
-            border-radius: 1rem;
-            font-size: 0.85rem;
+            background: white;
+            color: var(--dark);
+            padding: 0.5rem 1rem;
+            border-radius: 1.2rem;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid #e2e8f0;
+            margin-right: 0.6rem;
+            margin-bottom: 0.6rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chord-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .chord-pill:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            color: white;
+        }
+
+        .chord-pill:hover::before {
+            opacity: 1;
+        }
+
+        #selectedChordsList {
+            margin: 1rem 0;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) rgba(99, 102, 241, 0.1);
+        }
+
+        #selectedChordsList::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+
+        #selectedChordsList::-webkit-scrollbar-track {
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+        }
+
+        #selectedChordsList::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 10px;
+        }
+
+        .order-mode {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .order-mode label {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            padding: 0.8rem 1rem;
+            background: white;
+            border-radius: 1rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+            font-weight: 500;
+            font-size: 0.95rem;
+            flex: 1;
+            min-width: 160px;
+            position: relative;
+            overflow: hidden;
         }
 
-        @media (max-width: 360px) {
-            .container {
-                padding: 0.5rem;
+        .order-mode label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .order-mode label:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            color: white;
+        }
+
+        .order-mode label:hover::before {
+            opacity: 1;
+        }
+
+        .order-mode input:checked + span {
+            color: white;
+            font-weight: 600;
+        }
+
+        .order-mode input:checked + span i {
+            color: white;
+        }
+
+        .order-mode input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .order-mode input[type="radio"]:checked + span {
+            color: white;
+        }
+
+        .order-mode input[type="radio"]:checked ~ label {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        #audioAlert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            max-width: 90%;
+            width: 400px;
+            animation: bounceIn 0.6s;
+            text-align: center;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: none;
+            background: white;
+            padding: 2rem;
+        }
+
+        #audioAlert button {
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-weight: 600;
+        }
+
+        .control-buttons {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 2rem);
+            max-width: 800px;
+            display: flex;
+            gap: 1rem;
+            z-index: 90;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
             }
-            
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.98); box-shadow: 0 4px 20px -5px rgba(99, 102, 241, 0.6); }
+            50% { transform: scale(1); box-shadow: 0 0 0 10px rgba(99, 102, 241, 0.2); }
+            100% { transform: scale(0.98); box-shadow: 0 4px 20px -5px rgba(99, 102, 241, 0.6); }
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
             .card {
-                padding: 1rem;
+                padding: 1.5rem;
             }
-            
+
+            h1 {
+                font-size: 1.7rem;
+            }
+
+            #currentChord {
+                font-size: 3.2rem;
+                min-height: 90px;
+            }
+
+            .chord-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 0.6rem;
+                max-height: 160px;
+            }
+
+            .chord-btn {
+                font-size: 0.95rem;
+                padding: 0.7rem 0.4rem;
+                height: 46px;
+            }
+
+            .control-buttons {
+                bottom: 1rem;
+                width: calc(100% - 1rem);
+                padding: 0.8rem;
+            }
+
+            button:not(.theme-toggle), select {
+                padding: 0.9rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1.2rem;
+                border-radius: 1.2rem;
+            }
+
             h1 {
                 font-size: 1.5rem;
             }
-            
+
             #currentChord {
-                font-size: 2rem;
+                font-size: 2.8rem;
+                min-height: 80px;
+            }
+
+            .chord-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                max-height: 140px;
+                gap: 0.5rem;
+            }
+
+            .chord-btn {
+                font-size: 0.85rem;
+                height: 42px;
+                min-width: 60px;
+            }
+
+            .order-mode label {
+                font-size: 0.85rem;
+                padding: 0.7rem 0.9rem;
+                min-width: 140px;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            select, button {
+                width: 100%;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+                bottom: 0.5rem;
+                padding: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
+    <div id="audioAlert" class="card" style="display: none;">
+        <h3 class="text-2xl font-bold mb-4 animate__animated animate__tada">🔊 Включите звук</h3>
+        <p class="mb-6 text-gray-600">Для работы приложения требуется доступ к аудио. Нажмите кнопку ниже, чтобы разрешить воспроизведение звука.</p>
+        <button onclick="enableAudio()" class="secondary animate__animated animate__pulse animate__infinite w-full py-3 rounded-xl">
+            <i class="fas fa-volume-up mr-2"></i> Активировать звук
+        </button>
+    </div>
+
     <div class="container">
-        <div id="audioAlert" class="card" style="display: none; position: fixed; top: 20px; left: 20px; right: 20px; z-index: 1000;">
-            <h3>🔊 Включите звук</h3>
-            <p>Для работы приложения нажмите кнопку ниже</p>
-            <button onclick="enableAudio()" class="secondary">Активировать звук</button>
+        <div class="card">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-gradient-to-r from-indigo-500 to-pink-500 p-3 rounded-xl text-white">
+                    <i class="fas fa-guitar text-2xl"></i>
+                </div>
+                <div>
+                    <h1>Струны Будущего</h1>
+                    <p class="text-gray-600">Генератор аккордов для тренировки</p>
+                </div>
+            </div>
+            <p class="text-gray-700">Привет от Музыкальной школы "Струны будущего"! Выбирай время таймера, нужные аккорды и интервал между ними. Ты все сможешь! <span class="text-pink-500 animate__animated animate__rubberBand animate__infinite animate__slower">🎶</span></p>
         </div>
 
-        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-
-        <div class="card">
-            <h1>🎸 Струны Будущего</h1>
-            <p>Привет от Никиты из онлайн-школы "Струны будущего"! Выбирай время таймера, нужные аккорды и интервал между ними. Ты все сможешь! 🎶</p>
+        <div class="card bg-gradient-to-br from-indigo-50 to-pink-50 border-indigo-100">
+            <div id="currentChord" class="animate__animated animate__fadeIn"></div>
+            <p class="text-center text-gray-500 mt-2">Следующий аккорд появится здесь</p>
         </div>
 
-        <div id="currentChord"></div>
-
-        <div class="card">
+        <div class="card animate__animated animate__fadeInUp">
             <div class="settings-group">
-                <h3>⚙️ Настройки тренировки</h3>
+                <h3 class="text-xl font-semibold flex items-center gap-3 mb-4">
+                    <div class="bg-indigo-100 text-indigo-600 p-2 rounded-lg">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <span>Настройки тренировки</span>
+                </h3>
                 <div class="order-mode">
-                    <label>
+                    <label class="animate__animated animate__fadeInLeft">
                         <input type="radio" name="order" value="random" checked>
-                        <span>🎲 Случайный порядок</span>
+                        <span><i class="fas fa-random mr-2 text-indigo-500"></i> Случайный порядок</span>
                     </label>
-                    <label>
+                    <label class="animate__animated animate__fadeInRight">
                         <input type="radio" name="order" value="manual">
-                        <span>✏️ Ручной порядок</span>
+                        <span><i class="fas fa-hand-point-up mr-2 text-pink-500"></i> Ручной порядок</span>
                     </label>
                 </div>
                 <div class="controls">
                     <select id="timer">
-                        <option value="2">2 мин</option>
+                        <option value="2"><i class="fas fa-clock"></i> 2 мин</option>
                         <option value="4">4 мин</option>
                         <option value="6">6 мин</option>
                         <option value="10">10 мин</option>
@@ -223,22 +678,38 @@
                 </div>
             </div>
 
-            <div id="selectedOrder" style="display: none;">
-                <h4>Выбранные аккорды:</h4>
+            <div id="selectedOrder" style="display: none;" class="animate__animated animate__fadeIn mt-6">
+                <h4 class="font-medium text-gray-700 flex items-center gap-3 mb-3">
+                    <div class="bg-indigo-100 text-indigo-600 p-2 rounded-lg">
+                        <i class="fas fa-list-ol"></i>
+                    </div>
+                    <span>Выбранные аккорды:</span>
+                </h4>
                 <div id="selectedChordsList"></div>
-                <p class="hint">ℹ️ Кликайте аккорды в нужном порядке</p>
+                <p class="text-sm text-gray-500 mt-3 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-indigo-500"></i> Кликайте аккорды в нужном порядке
+                </p>
             </div>
 
-            <div class="settings-group">
-                <h3>🎵 Выбери аккорды</h3>
+            <div class="settings-group mt-8">
+                <h3 class="text-xl font-semibold flex items-center gap-3 mb-4">
+                    <div class="bg-pink-100 text-pink-600 p-2 rounded-lg">
+                        <i class="fas fa-guitar"></i>
+                    </div>
+                    <span>Выбери аккорды</span>
+                </h3>
                 <div class="chord-grid" id="chordButtons"></div>
             </div>
-
-            <div class="controls">
-                <button onclick="startTraining()" class="secondary">🚀 Начать тренировку</button>
-                <button onclick="stopTraining()" class="danger">⏹ Остановить</button>
-            </div>
         </div>
+    </div>
+
+    <div class="control-buttons">
+        <button onclick="startTraining()" class="secondary animate__animated animate__zoomIn" style="flex: 1;">
+            <i class="fas fa-play mr-2"></i> Начать
+        </button>
+        <button onclick="stopTraining()" class="danger animate__animated animate__zoomIn" style="flex: 1;">
+            <i class="fas fa-stop mr-2"></i> Стоп
+        </button>
     </div>
 
     <script>
@@ -251,15 +722,37 @@
 
         async function enableAudio() {
             try {
+                document.getElementById('audioAlert').classList.add('animate__fadeOut');
+                setTimeout(() => {
+                    document.getElementById('audioAlert').style.display = 'none';
+                }, 500);
+                
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioContext.createOscillator();
                 oscillator.connect(audioContext.destination);
                 oscillator.start(0);
                 oscillator.stop(0.001);
                 await audioContext.resume();
-                document.getElementById('audioAlert').style.display = 'none';
                 audioAllowed = true;
                 playSound(440);
+                
+                // Show success message
+                const currentAlert = document.getElementById('audioAlert');
+                currentAlert.innerHTML = `
+                    <div class="text-green-500 text-4xl mb-4 animate__animated animate__tada">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Готово!</h3>
+                    <p class="mb-6 text-gray-600">Звук успешно активирован</p>
+                    <button onclick="document.getElementById('audioAlert').style.display='none'" 
+                            class="secondary w-full py-3 rounded-xl">
+                        Продолжить
+                    </button>
+                `;
+                currentAlert.style.display = 'block';
+                currentAlert.classList.remove('animate__fadeOut');
+                currentAlert.classList.add('animate__fadeIn');
+                
             } catch(e) {
                 alert('Ошибка инициализации звука: ' + e.message);
             }
@@ -296,9 +789,10 @@
 
         function initChords() {
             const container = document.getElementById('chordButtons');
-            chords.forEach(chord => {
+            chords.forEach((chord, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'chord-btn';
+                btn.className = `chord-btn animate__animated animate__fadeInUp`;
+                btn.style.animationDelay = `${index * 0.05}s`;
                 btn.textContent = chord;
                 btn.addEventListener('click', handleChordClick);
                 container.appendChild(btn);
@@ -313,6 +807,8 @@
             const index = selectedChords.indexOf(chord);
             if (index === -1) {
                 selectedChords.push(chord);
+                btn.classList.add('animate__tada');
+                setTimeout(() => btn.classList.remove('animate__tada'), 1000);
             } else {
                 selectedChords.splice(index, 1);
             }
@@ -324,9 +820,26 @@
             list.innerHTML = '';
             selectedChords.forEach((chord, index) => {
                 const pill = document.createElement('div');
-                pill.className = 'chord-pill';
-                pill.innerHTML = `<span>${index + 1}.</span><span>${chord}</span>`;
+                pill.className = 'chord-pill animate__animated animate__fadeIn';
+                pill.style.animationDelay = `${index * 0.1}s`;
+                pill.innerHTML = `<span class="font-bold">${index + 1}.</span><span class="font-medium">${chord}</span>`;
                 list.appendChild(pill);
+                
+                // Add click to remove functionality
+                pill.addEventListener('click', () => {
+                    const chord = selectedChords[index];
+                    selectedChords.splice(index, 1);
+                    updateSelectedChordsList();
+                    
+                    // Also remove active class from the corresponding button
+                    document.querySelectorAll('.chord-btn').forEach(btn => {
+                        if(btn.textContent === chord) {
+                            btn.classList.remove('active');
+                            btn.classList.add('animate__headShake');
+                            setTimeout(() => btn.classList.remove('animate__headShake'), 1000);
+                        }
+                    });
+                });
             });
         }
 
@@ -334,11 +847,20 @@
             stopTraining();
             
             if (!audioAllowed) {
-                alert('Сначала активируйте звук!');
+                const alertBox = document.getElementById('audioAlert');
+                alertBox.style.display = 'block';
+                alertBox.classList.remove('animate__fadeOut');
+                alertBox.classList.add('animate__tada');
+                setTimeout(() => alertBox.classList.remove('animate__tada'), 1000);
                 return;
             }
             
-            if(selectedChords.length === 0) return alert('Выберите аккорды!');
+            if(selectedChords.length === 0) {
+                const chordGrid = document.getElementById('chordButtons');
+                chordGrid.classList.add('animate__headShake');
+                setTimeout(() => chordGrid.classList.remove('animate__headShake'), 1000);
+                return alert('Выберите аккорды!');
+            }
             
             const orderMode = document.querySelector('input[name="order"]:checked').value;
             let chordsArray = orderMode === 'random' ? 
@@ -349,12 +871,17 @@
             const interval = document.getElementById('interval').value * 1000;
             
             let index = 0;
-            document.getElementById('currentChord').textContent = chordsArray[0];
+            const chordDisplay = document.getElementById('currentChord');
+            chordDisplay.textContent = chordsArray[0];
+            chordDisplay.classList.add('animate__rubberBand');
+            setTimeout(() => chordDisplay.classList.remove('animate__rubberBand'), 1000);
             playSound(587.33);
             
             trainingInterval = setInterval(() => {
                 index = (index + 1) % chordsArray.length;
-                document.getElementById('currentChord').textContent = chordsArray[index];
+                chordDisplay.textContent = chordsArray[index];
+                chordDisplay.classList.add('animate__rubberBand');
+                setTimeout(() => chordDisplay.classList.remove('animate__rubberBand'), 1000);
                 playSound(587.33);
             }, interval);
 
@@ -364,7 +891,11 @@
         function stopTraining() {
             clearInterval(trainingInterval);
             clearTimeout(trainingTimeout);
-            document.getElementById('currentChord').textContent = '';
+            const chordDisplay = document.getElementById('currentChord');
+            chordDisplay.textContent = '';
+            document.querySelectorAll('.chord-btn.active').forEach(btn => {
+                btn.classList.remove('animate__pulse');
+            });
         }
 
         function shuffleArray(array) {
@@ -375,20 +906,24 @@
             return array;
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-theme');
-        }
-
         document.querySelectorAll('input[name="order"]').forEach(radio => {
             radio.addEventListener('change', () => {
-                document.getElementById('selectedOrder').style.display = 
-                    radio.value === 'manual' ? 'block' : 'none';
+                const selectedOrder = document.getElementById('selectedOrder');
+                if(radio.value === 'manual') {
+                    selectedOrder.style.display = 'block';
+                    selectedOrder.classList.add('animate__fadeIn');
+                } else {
+                    selectedOrder.style.display = 'none';
+                }
             });
         });
 
         window.onload = () => {
             initChords();
-            document.getElementById('audioAlert').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('audioAlert').style.display = 'block';
+                document.getElementById('audioAlert').classList.add('animate__fadeIn');
+            }, 500);
         };
     </script>
 </body>
