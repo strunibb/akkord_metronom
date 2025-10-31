@@ -3,119 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Генератор аккордов | Струны Будущего</title>
+  <title>Генератор аккордов v2 · Струны будущего</title>
 
-  <!-- Tailwind CDN -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Animations & Icons -->
+  <!-- Animations + Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
 
     :root{
-      --primary:#6366f1; --primary-dark:#4f46e5; --accent:#f43f5e; --ink:#0f172a;
-      --glass:rgba(255,255,255,.92); --line:rgba(15,23,42,.08);
-      --grad:linear-gradient(135deg,#6366f1 0%,#f43f5e 100%);
+      --ink:#0b1220; --glass:rgba(255,255,255,.92); --line:rgba(10,18,35,.12);
+      --grad:linear-gradient(135deg,#7c3aed 0%, #2563eb 50%, #f43f5e 100%);
+      --card-grad:linear-gradient(180deg,rgba(255,255,255,.98),rgba(249,250,255,.9));
     }
-    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent }
-    html,body{ height:100% }
+    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
     body{
-      font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
       color:var(--ink);
-      background: radial-gradient(120vw 90vh at 50% -20%, #e9edff 0%, transparent 60%),
-                  linear-gradient(180deg,#f5f7fb 0%, #e9eef7 100%);
+      background:
+        radial-gradient(120vw 90vh at 50% -20%, #dbe4ff 0%, transparent 60%),
+        linear-gradient(180deg,#eef2ff 0%, #eaf0ff 100%);
       padding:16px; overflow-x:hidden;
     }
-    .container{ max-width:960px; margin:0 auto; padding-bottom:120px }
+    .container{max-width:1040px;margin:0 auto;padding-bottom:120px}
 
     .card{
-      background:var(--glass);
+      background:var(--card-grad);
       border:1px solid var(--line);
-      border-radius:20px;
-      box-shadow:0 12px 26px rgba(2,8,23,.08);
-      backdrop-filter: blur(12px);
-      padding:22px; margin-bottom:16px; position:relative; overflow:hidden;
-      animation:fadeIn .5s ease;
+      border-radius:22px; padding:22px; margin-bottom:16px;
+      box-shadow:0 18px 40px rgba(15,23,42,.08);
+      position:relative; overflow:hidden; backdrop-filter: blur(10px);
+      animation:fade .4s ease;
     }
     .card:before{
-      content:""; position:absolute; inset:-60% -40% auto auto; height:180%;
-      width:180%; transform:rotate(28deg);
+      content:""; position:absolute; inset:-60% auto auto -40%;
+      width:180%; height:180%; transform:rotate(28deg);
       background:radial-gradient(closest-side, rgba(99,102,241,.08), transparent 70%);
       pointer-events:none;
     }
+    @keyframes fade{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
 
-    /* Chord grid */
-    .chord-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(86px,1fr)); gap:.6rem; max-height:230px; overflow:auto; padding:6px }
-    .chord-btn{
-      height:52px; border-radius:14px; border:1.5px solid var(--line); background:#fff; font-weight:700;
-      display:flex; align-items:center; justify-content:center; letter-spacing:.2px;
-      box-shadow:0 2px 6px rgba(2,8,23,.05);
-      transition:transform .15s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
-    }
-    .chord-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 16px rgba(2,8,23,.12); border-color:#c7cff2 }
-    .chord-btn.active{
-      color:#fff; background:var(--primary); border-color:var(--primary);
-      box-shadow:0 10px 24px rgba(99,102,241,.35); transform:translateY(0) scale(.98);
-    }
+    /* Segmented control */
+    .segm{display:flex;gap:10px;padding:8px;border-radius:16px;border:1px solid var(--line);background:#fff}
+    .segm button{flex:1;padding:12px 14px;border-radius:12px;font-weight:800;border:1px solid transparent}
+    .segm button[aria-pressed="true"]{background:#4f46e5;color:#fff;border-color:#4f46e5;box-shadow:0 10px 24px rgba(79,70,229,.35)}
+    .segm button[aria-pressed="false"]{background:#f8fafc}
 
-    /* Sticky controls */
-    .dock{
-      position:fixed; left:50%; transform:translateX(-50%);
-      bottom: env(safe-area-inset-bottom, 16px);
-      width:calc(100% - 20px); max-width:960px;
-      background:var(--glass); border:1px solid var(--line);
-      border-radius:18px; box-shadow:0 16px 30px rgba(2,8,23,.12);
-      padding:12px; z-index:40; backdrop-filter: blur(12px);
+    /* Chords grid */
+    .grid-chords{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:.7rem;max-height:260px;overflow:auto;padding:6px}
+    .btn-chord{
+      height:56px;border-radius:14px;border:1.5px solid var(--line);
+      background:#fff;font-weight:900;letter-spacing:.2px;
+      display:flex;align-items:center;justify-content:center;
+      transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease, color .2s ease;
+      box-shadow:0 2px 6px rgba(2,8,23,.06);
     }
+    .btn-chord:hover{transform:translateY(-2px);box-shadow:0 10px 18px rgba(2,8,23,.12);border-color:#cbd5ff}
+    .btn-chord.active{color:#fff;background:#4f46e5;border-color:#4f46e5;box-shadow:0 12px 28px rgba(79,70,229,.32);transform:translateY(0) scale(.98)}
 
-    /* Order segmented */
-    .segm{ display:flex; gap:8px; background:#fff; padding:6px; border-radius:14px; border:1px solid var(--line) }
-    .segm button{
-      flex:1; padding:10px 12px; border-radius:10px; font-weight:700; border:1px solid transparent;
-    }
-    .segm button[aria-pressed="true"]{ background:var(--primary); color:#fff; border-color:var(--primary); box-shadow:0 6px 16px rgba(99,102,241,.35) }
-    .segm button[aria-pressed="false"]{ background:#f8fafc }
-
-    /* Badge */
-    .badge{
-      display:inline-flex; align-items:center; gap:.45rem;
-      padding:.45rem .7rem; border-radius:999px; font-weight:700; font-size:.9rem;
-      border:1px solid var(--line); background:#fff;
-    }
-
-    /* Overlay card (audio) */
-    #audioAlert{
-      position:fixed; inset:0; display:none; place-items:center; z-index:50;
-      background:linear-gradient(180deg, rgba(15,23,42,.35), rgba(15,23,42,.22));
-      backdrop-filter: blur(4px);
-    }
-    #audioAlert .inner{
-      width:min(92vw,460px)
-    }
-
-    @keyframes fadeIn{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
-
-    /* Responsive tweaks */
+    /* Dock */
+    .dock{position:fixed;left:50%;transform:translateX(-50%);
+      bottom: max(12px, env(safe-area-inset-bottom));z-index:40;
+      width:calc(100% - 20px);max-width:1040px;
+      background:var(--glass);border:1px solid var(--line);border-radius:18px;
+      padding:12px;backdrop-filter:blur(12px);box-shadow:0 18px 36px rgba(2,8,23,.12)}
     @media (max-width:640px){
-      .card{ padding:18px; border-radius:16px }
-      .dock{ width:calc(100% - 12px); padding:10px }
-      .chord-grid{ grid-template-columns:repeat(auto-fit,minmax(76px,1fr)); max-height:200px }
-      .chord-btn{ height:48px; font-weight:700 }
+      .card{padding:18px;border-radius:18px}
+      .grid-chords{grid-template-columns:repeat(auto-fit,minmax(80px,1fr));max-height:220px}
+      .btn-chord{height:50px}
+      .dock{width:calc(100% - 12px);padding:10px}
     }
+
+    /* Audio overlay */
+    #audioAlert{position:fixed;inset:0;display:none;place-items:center;z-index:50;
+      background:linear-gradient(180deg,rgba(15,23,42,.35),rgba(15,23,42,.22));backdrop-filter:blur(4px)}
+    #audioAlert .inner{width:min(92vw,480px)}
   </style>
 </head>
 <body>
 
-  <!-- AUDIO PERMISSION OVERLAY -->
+  <!-- AUDIO PERMISSION -->
   <div id="audioAlert">
-    <div class="card inner animate__animated animate__fadeInDown bg-white/95">
+    <div class="card inner bg-white/95 animate__animated animate__fadeInDown">
       <div class="flex items-center justify-center text-5xl text-indigo-500 mb-3">
         <i class="fa-solid fa-volume-high"></i>
       </div>
       <h3 class="text-2xl font-extrabold text-center mb-1">Включите звук</h3>
-      <p class="text-center text-slate-600 mb-5">Для корректной работы тренажёра нужно разрешить воспроизведение звука.</p>
+      <p class="text-center text-slate-600 mb-5">Чтобы тренажёр работал, разрешите воспроизведение звука.</p>
       <button onclick="enableAudio()" class="w-full py-3 rounded-xl text-white font-extrabold bg-indigo-600 hover:bg-indigo-700 shadow-lg">
         Активировать звук
       </button>
@@ -126,85 +104,76 @@
     <!-- HEADER -->
     <div class="card">
       <div class="flex items-center gap-3 mb-3">
-        <div class="p-3 rounded-xl text-white bg-gradient-to-br from-indigo-500 to-pink-500 shadow">
+        <div class="p-3 rounded-xl text-white bg-gradient-to-br from-indigo-500 via-blue-500 to-rose-500 shadow">
           <i class="fa-solid fa-guitar text-2xl"></i>
         </div>
         <div>
-          <h1 class="text-2xl md:text-[28px] font-black tracking-tight" style="background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;">Струны Будущего</h1>
-          <p class="text-slate-600 -mt-1">Генератор аккордов · современная адаптивная версия</p>
+          <h1 class="text-[28px] font-black tracking-tight" style="background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;">Струны будущего — Генератор аккордов v2</h1>
+          <p class="text-slate-600 -mt-1">Современный адаптивный интерфейс</p>
         </div>
       </div>
 
-      <!-- MODE + BADGE -->
+      <!-- MODE SWITCH + BADGE -->
       <div class="flex flex-wrap items-center gap-3">
         <div class="segm" role="tablist" aria-label="Режим показа аккордов">
-          <button id="btnRandom" role="tab" class="min-w-[120px]" aria-pressed="true" aria-selected="true">
+          <button id="btnRandom" role="tab" aria-pressed="true" aria-selected="true">
             <i class="fa-solid fa-shuffle mr-1"></i> Случайный
           </button>
-          <button id="btnManual" role="tab" class="min-w-[120px]" aria-pressed="false" aria-selected="false">
+          <button id="btnManual" role="tab" aria-pressed="false" aria-selected="false">
             <i class="fa-regular fa-hand-pointer mr-1"></i> Ручной
           </button>
         </div>
-        <span id="modeBadge" class="badge">
-          <i class="fa-solid fa-circle text-[8px] text-emerald-500"></i>
-          Режим: случайный
+        <span id="modeBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 bg-white font-extrabold text-sm">
+          <i class="fa-solid fa-circle text-[8px] text-emerald-500"></i> Режим: случайный
         </span>
       </div>
 
       <!-- INTERVAL ONLY -->
       <div class="mt-5 grid md:grid-cols-[1fr_auto] gap-4 items-end">
         <div>
-          <label for="interval" class="block text-sm font-bold text-slate-700 mb-2">
+          <label for="interval" class="block text-sm font-extrabold text-slate-700 mb-2">
             Время между аккордами
             <span id="intervalVal" class="ml-2 px-2 py-[2px] rounded-full text-indigo-700 bg-indigo-50 border border-indigo-200 font-extrabold">3 сек</span>
           </label>
-          <input id="interval" type="range" min="1" max="6" value="3" step="1"
-                 class="w-full accent-indigo-600">
+          <input id="interval" type="range" min="1" max="6" value="3" step="1" class="w-full accent-indigo-600">
           <div class="flex justify-between text-xs text-slate-500 mt-1">
             <span>1 c</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6 c</span>
           </div>
         </div>
-
         <div class="hidden md:flex items-center justify-end gap-2">
-          <button class="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-bold"
-                  onclick="setIntervalValue(-1)">− 1с</button>
-          <button class="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-bold"
-                  onclick="setIntervalValue(1)">+ 1с</button>
+          <button class="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-extrabold" onclick="nudgeInterval(-1)">− 1с</button>
+          <button class="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-extrabold" onclick="nudgeInterval(1)">+ 1с</button>
         </div>
       </div>
     </div>
 
     <!-- CURRENT CHORD -->
     <div class="card text-center">
-      <div id="currentChord"
-           class="text-5xl md:text-7xl font-black tracking-tight"
-           style="min-height:110px; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;">
-      </div>
-      <p class="text-slate-500">Здесь будут появляться аккорды по выбранному режиму</p>
+      <div id="currentChord" class="animate__animated text-6xl md:text-7xl font-black tracking-tight"
+           style="min-height:116px; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;"></div>
+      <p class="text-slate-500">Здесь появляются аккорды по выбранному режиму</p>
     </div>
 
-    <!-- SELECTED (MANUAL) -->
-    <div id="selectedOrder" class="card hidden">
+    <!-- MANUAL QUEUE -->
+    <div id="manualPanel" class="card hidden">
       <h3 class="text-xl font-extrabold mb-2 flex items-center gap-2">
-        <i class="fa-solid fa-list-ol text-indigo-600"></i>
-        Выбранные аккорды (порядок показа)
+        <i class="fa-solid fa-list-ol text-indigo-600"></i> Порядок показа (ручной режим)
       </h3>
-      <p class="text-slate-500 mb-3">Кликайте аккорды ниже — они добавятся сюда в нужной последовательности. Нажмите на «пилюлю», чтобы удалить из очереди.</p>
-      <div id="selectedChordsList" class="flex flex-wrap gap-2 max-h-36 overflow-auto"></div>
+      <p class="text-slate-500 mb-3">Кликайте аккорды ниже — они добавятся сюда по очереди. Нажмите на «пилюлю», чтобы удалить.</p>
+      <div id="queueList" class="flex flex-wrap gap-2 max-h-36 overflow-auto"></div>
     </div>
 
     <!-- CHORDS -->
     <div class="card">
       <h3 class="text-xl font-extrabold mb-2 flex items-center gap-2">
-        <i class="fa-solid fa-guitar text-pink-600"></i>
-        Выбери аккорды
+        <i class="fa-solid fa-guitar text-rose-600"></i> Выбери аккорды
       </h3>
-      <p class="text-slate-500 mb-3">Нажимай, чтобы добавить/убрать из набора. В «Ручном» режиме клики задают именно порядок воспроизведения.</p>
-      <div id="chordButtons" class="chord-grid"></div>
+      <p class="text-slate-500 mb-3">В «Случайном» режиме — просто выдели набор. В «Ручном» — клики задают последовательность.</p>
+      <div id="chords" class="grid-chords"></div>
     </div>
   </div>
 
-  <!-- STICKY DOCK -->
+  <!-- STICKY CONTROLS -->
   <div class="dock">
     <div class="flex flex-col sm:flex-row gap-2">
       <button id="startBtn" class="w-full py-3 rounded-xl text-white font-extrabold bg-indigo-600 hover:bg-indigo-700 shadow-lg">
@@ -217,179 +186,132 @@
   </div>
 
   <script>
-    // ---------- DATA ----------
-    const chords = ['A','Am','A7','B','Bm','B7','C','Cm','C7','D','Dm','D7','E','Em','E7','F','Fm','F7','G','Gm','G7'];
+    // ====== DATA ======
+    const ALL_CHORDS = [
+      'A','Am','A7',
+      'B','Bm','B7',
+      'C','Cm','C7',
+      'D','Dm','D7',
+      'E','Em','E7',
+      'F','Fm','F7',
+      'G','Gm','G7'
+    ];
 
-    // ---------- STATE ----------
-    let audioCtx = null, audioAllowed = false;
-    let trainingTimer = null;
-    let selectedChords = [];
-    let mode = 'random'; // 'random' | 'manual'
+    // ====== STATE ======
+    let audioCtx = null, audioReady = false;
+    let timer = null;
+    let mode = 'random';          // 'random' | 'manual'
+    const selected = new Set();    // набор для случайного режима
+    let queue = [];                // порядок для ручного режима
 
-    // ---------- AUDIO ----------
+    // ====== AUDIO ======
     async function enableAudio(){
       try{
-        document.getElementById('audioAlert').style.display = 'none';
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         await audioCtx.resume();
-        audioAllowed = true;
-        blip();
-      }catch(e){
-        alert('Ошибка аудио: ' + e.message);
-      }
+        audioReady = true;
+        document.getElementById('audioAlert').style.display = 'none';
+        ping();
+      }catch(e){ alert('Аудио не запустилось: ' + e.message); }
     }
-    function blip(freq=587.33){
-      if(!audioAllowed || !audioCtx) return;
+    function ping(freq=590){
+      if(!audioReady || !audioCtx) return;
       const t = audioCtx.currentTime;
       const osc = audioCtx.createOscillator();
       const g = audioCtx.createGain();
-      osc.type='sine'; osc.frequency.setValueAtTime(freq, t);
-      g.gain.setValueAtTime(.22, t);
-      g.gain.exponentialRampToValueAtTime(0.01, t+.12);
+      osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(.22, t); g.gain.exponentialRampToValueAtTime(0.01, t+.12);
       osc.connect(g); g.connect(audioCtx.destination);
       osc.start(t); osc.stop(t+.12);
       if(audioCtx.state==='suspended') audioCtx.resume();
     }
 
-    // ---------- UI BUILD ----------
-    function buildChordButtons(){
-      const wrap = document.getElementById('chordButtons');
+    // ====== UI BUILD ======
+    function buildChords(){
+      const wrap = document.getElementById('chords');
       wrap.innerHTML = '';
-      chords.forEach((ch, i)=>{
+      ALL_CHORDS.forEach((ch, i)=>{
         const btn = document.createElement('button');
-        btn.className = 'chord-btn animate__animated animate__fadeInUp';
+        btn.className = 'btn-chord animate__animated animate__fadeInUp';
         btn.style.animationDelay = `${i*0.03}s`;
         btn.textContent = ch;
-        btn.addEventListener('click', ()=>onChordClick(btn, ch));
+        btn.addEventListener('click', ()=> onChordClick(btn, ch));
         wrap.appendChild(btn);
       });
     }
 
     function onChordClick(btn, chord){
-      // toggle selection
       if(mode==='random'){
-        // In random mode: toggle membership (order doesn't matter)
-        btn.classList.toggle('active');
-        const idx = selectedChords.indexOf(chord);
-        if(idx === -1) selectedChords.push(chord);
-        else selectedChords.splice(idx, 1);
+        // просто включаем/выключаем из множества
+        if(selected.has(chord)){ selected.delete(chord); btn.classList.remove('active'); }
+        else{ selected.add(chord); btn.classList.add('active'); }
       }else{
-        // Manual: every click appends to queue (order!)
-        // If chord already in list, remove it both places
-        const idx = selectedChords.indexOf(chord);
-        if(idx !== -1){
-          selectedChords.splice(idx, 1);
+        // ручной: очередь без дублей, кликом по сетке — добавить/убрать
+        const idx = queue.indexOf(chord);
+        if(idx>-1){
+          queue.splice(idx,1);
           btn.classList.remove('active');
         }else{
-          selectedChords.push(chord);
+          queue.push(chord);
           btn.classList.add('active');
         }
-        renderSelectedList();
+        renderQueue();
       }
     }
 
-    function renderSelectedList(){
-      const list = document.getElementById('selectedChordsList');
+    function renderQueue(){
+      const list = document.getElementById('queueList');
       list.innerHTML = '';
-      selectedChords.forEach((ch,i)=>{
+      queue.forEach((ch, i)=>{
         const pill = document.createElement('button');
         pill.className = 'px-3 py-1.5 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700 font-extrabold';
         pill.innerHTML = `<span class="opacity-70 mr-1">${i+1}.</span>${ch}`;
         pill.addEventListener('click', ()=>{
-          // remove from manual queue
-          selectedChords.splice(i,1);
-          // find button & unhighlight
-          document.querySelectorAll('.chord-btn').forEach(b=>{ if(b.textContent===ch) b.classList.remove('active'); });
-          renderSelectedList();
+          // удалить из очереди и подсветку в сетке
+          queue.splice(i,1);
+          document.querySelectorAll('.btn-chord').forEach(b=>{ if(b.textContent===ch) b.classList.remove('active'); });
+          renderQueue();
         });
         list.appendChild(pill);
       });
     }
 
-    // ---------- MODE ----------
+    // ====== MODE SWITCH ======
     function setMode(next){
       mode = next;
+      // визуальное состояние переключателя
+      document.getElementById('btnRandom').setAttribute('aria-pressed', String(mode==='random'));
+      document.getElementById('btnManual').setAttribute('aria-pressed', String(mode==='manual'));
+      document.getElementById('btnRandom').setAttribute('aria-selected', String(mode==='random'));
+      document.getElementById('btnManual').setAttribute('aria-selected', String(mode==='manual'));
+
+      // плашка
       const badge = document.getElementById('modeBadge');
       badge.innerHTML = (mode==='random')
         ? `<i class="fa-solid fa-circle text-[8px] text-emerald-500"></i> Режим: случайный`
         : `<i class="fa-solid fa-circle text-[8px] text-sky-500"></i> Режим: ручной`;
-      // tabs visual state
-      document.getElementById('btnRandom').setAttribute('aria-pressed', mode==='random');
-      document.getElementById('btnManual').setAttribute('aria-pressed', mode==='manual');
-      document.getElementById('btnRandom').setAttribute('aria-selected', mode==='random');
-      document.getElementById('btnManual').setAttribute('aria-selected', mode==='manual');
 
-      // manual panel visibility
-      const panel = document.getElementById('selectedOrder');
-      if(mode==='manual'){ panel.classList.remove('hidden'); renderSelectedList(); }
+      // панель очереди
+      const panel = document.getElementById('manualPanel');
+      if(mode==='manual'){ panel.classList.remove('hidden'); renderQueue(); }
       else{ panel.classList.add('hidden'); }
 
-      // reset highlights when switching modes
-      document.querySelectorAll('.chord-btn').forEach(b=>b.classList.remove('active'));
-      const set = new Set(selectedChords);
-      selectedChords = [];
+      // сброс подсветок
+      document.querySelectorAll('.btn-chord').forEach(b=> b.classList.remove('active'));
       if(mode==='random'){
-        // keep unique list, but selection is membership only
-        set.forEach(ch=>{ selectedChords.push(ch); });
-        document.querySelectorAll('.chord-btn').forEach(b=>{
-          if(selectedChords.includes(b.textContent)) b.classList.add('active');
+        // подсветить выбранные
+        [...selected].forEach(ch=>{
+          document.querySelectorAll('.btn-chord').forEach(b=>{ if(b.textContent===ch) b.classList.add('active'); });
         });
       }else{
-        // start fresh queue for manual
-        selectedChords = [];
-        renderSelectedList();
+        // начать с пустой очереди
+        queue = [];
+        renderQueue();
       }
     }
 
-    // ---------- TRAINING ----------
-    function start(){
-      stop(); // clear previous
-      if(!audioAllowed){ document.getElementById('audioAlert').style.display='grid'; return; }
-
-      if(selectedChords.length===0){
-        const grid = document.getElementById('chordButtons');
-        grid.classList.add('animate__headShake');
-        setTimeout(()=>grid.classList.remove('animate__headShake'), 700);
-        alert('Выберите хотя бы один аккорд.');
-        return;
-      }
-
-      const intervalSec = +document.getElementById('interval').value;
-      const delay = Math.max(1, Math.min(6, intervalSec))*1000;
-
-      const display = document.getElementById('currentChord');
-      let queue = (mode==='manual') ? [...selectedChords] : shuffle([...selectedChords]);
-      let i = -1;
-
-      // first tick immediately
-      tick();
-      trainingTimer = setInterval(tick, delay);
-
-      function tick(){
-        if(queue.length===0) return;
-        i = (i+1) % queue.length;
-        if(mode==='random' && i===0){ queue = shuffle([...selectedChords]); } // reshuffle each loop
-        const chord = queue[i];
-        display.textContent = chord;
-        display.classList.add('animate__rubberBand');
-        setTimeout(()=>display.classList.remove('animate__rubberBand'), 600);
-        blip();
-      }
-    }
-
-    function stop(){
-      if(trainingTimer){ clearInterval(trainingTimer); trainingTimer=null; }
-      const display = document.getElementById('currentChord');
-      display.textContent = '';
-    }
-
-    function shuffle(a){
-      for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-      return a;
-    }
-
-    // ---------- INTERVAL DISPLAY ----------
-    function setIntervalValue(delta){
+    // ====== INTERVAL UI ======
+    function nudgeInterval(delta){
       const r = document.getElementById('interval');
       let v = +r.value + delta;
       if(v<1) v=1; if(v>6) v=6;
@@ -397,13 +319,60 @@
       document.getElementById('intervalVal').textContent = `${v} сек`;
     }
 
-    // ---------- INIT ----------
+    // ====== ENGINE ======
+    function start(){
+      stop();
+      if(!audioReady){ document.getElementById('audioAlert').style.display='grid'; return; }
+
+      const display = document.getElementById('currentChord');
+      const delay = +document.getElementById('interval').value * 1000;
+
+      let sequence = [];
+      if(mode==='random'){
+        if(selected.size===0){ shakeGrid(); alert('Выбери хотя бы один аккорд.'); return; }
+        sequence = shuffle([...selected]);
+      }else{
+        if(queue.length===0){ shakeGrid(); alert('Добавь аккорды в очередь.'); return; }
+        sequence = [...queue];
+      }
+
+      let i = -1;
+      tick(); // показать первый сразу
+      timer = setInterval(tick, delay);
+
+      function tick(){
+        i = (i + 1) % sequence.length;
+        if(mode==='random' && i===0){ sequence = shuffle([...selected]); } // перемешиваем каждый круг
+        const ch = sequence[i];
+        display.textContent = ch;
+        display.classList.add('animate__rubberBand');
+        setTimeout(()=>display.classList.remove('animate__rubberBand'), 550);
+        ping();
+      }
+    }
+
+    function stop(){
+      if(timer){ clearInterval(timer); timer = null; }
+      document.getElementById('currentChord').textContent = '';
+    }
+
+    function shuffle(a){
+      for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+      return a;
+    }
+
+    function shakeGrid(){
+      const grid = document.getElementById('chords');
+      grid.classList.add('animate__headShake');
+      setTimeout(()=>grid.classList.remove('animate__headShake'), 700);
+    }
+
+    // ====== INIT ======
     window.addEventListener('load', ()=>{
-      buildChordButtons();
+      buildChords();
       setMode('random');
-      setIntervalValue(0);
-      // show audio overlay shortly (for iOS)
-      setTimeout(()=>{ document.getElementById('audioAlert').style.display='grid'; }, 500);
+      nudgeInterval(0);
+      setTimeout(()=>{ document.getElementById('audioAlert').style.display='grid'; }, 400);
 
       document.getElementById('btnRandom').addEventListener('click', ()=>setMode('random'));
       document.getElementById('btnManual').addEventListener('click', ()=>setMode('manual'));
