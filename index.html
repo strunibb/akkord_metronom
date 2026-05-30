@@ -294,6 +294,16 @@
       align-content: stretch;
     }
 
+    .hero__visual .card {
+      height: 100%;
+      margin-top: 0;
+    }
+
+    .hero__visual .card + .card {
+      margin-top: 0;
+    }
+
+
     .mini-card {
       padding: 18px;
       border: 1px solid var(--line);
@@ -359,7 +369,7 @@
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      grid-template-columns: 1fr;
       gap: 18px;
       margin-top: 18px;
       align-items: start;
@@ -1187,10 +1197,6 @@
               <div class="brand__sub">интерактивный тренажер аккордов</div>
             </div>
           </div>
-
-          <div class="pill">
-            
-          </div>
         </div>
 
         <h1><span class="grad-text">Тренажер аккордов</span></h1>
@@ -1201,34 +1207,6 @@
       </div>
 
       <div class="hero__visual">
-        <div class="mini-card mini-card--accent">
-          <div class="mini-label">режим сейчас</div>
-          <div id="heroMode" class="mini-value">Случайный</div>
-          <p class="mini-text">Аккорды будут появляться в случайном порядке из выбранного набора.</p>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat">
-            <div id="heroSelected" class="stat__num">7</div>
-            <div class="stat__name">выбрано аккордов</div>
-          </div>
-          <div class="stat">
-            <div id="heroInterval" class="stat__num">3с</div>
-            <div class="stat__name">интервал смены</div>
-          </div>
-        </div>
-
-        <div class="mini-card">
-          <div class="mini-label">как использовать</div>
-          <p class="mini-text">
-            Для урока: включите тренажёр на 2–3 минуты и попросите ученика менять аккорд без остановки ритма.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section id="practice" class="layout">
-      <div>
         <div class="card">
           <div class="section-title">
             <div>
@@ -1260,7 +1238,11 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
+    <section id="practice" class="layout">
+      <div>
         <div id="manualPanel" class="card manual-panel">
           <div class="section-title">
             <div>
@@ -1392,9 +1374,6 @@
       manualModeBtn: $("#manualModeBtn"),
       manualPanel: $("#manualPanel"),
       modeBadge: $("#modeBadge"),
-      heroMode: $("#heroMode"),
-      heroSelected: $("#heroSelected"),
-      heroInterval: $("#heroInterval"),
       intervalRange: $("#intervalRange"),
       intervalValue: $("#intervalValue"),
       chordGrid: $("#chordGrid"),
@@ -1785,7 +1764,6 @@
 
       els.intervalRange.style.setProperty("--range", `${percent}%`);
       els.intervalValue.textContent = `${value} сек`;
-      els.heroInterval.textContent = `${value}с`;
     }
 
     function renderAll() {
@@ -1800,8 +1778,6 @@
         ? '<span class="status-dot"></span> случайный режим'
         : '<span class="status-dot"></span> ручной режим';
 
-      els.heroMode.textContent = mode === "random" ? "Случайный" : "Ручной";
-      els.heroSelected.textContent = activeCount;
       els.selectedBadge.textContent = `${activeCount} выбрано`;
       els.selectedMetric.textContent = activeCount;
       els.shownMetric.textContent = shownCount;
