@@ -126,7 +126,7 @@
       min-height: 320px;
       padding: clamp(22px, 4vw, 42px);
       display: grid;
-      grid-template-columns: minmax(0, 1.18fr) minmax(290px, 0.82fr);
+      grid-template-columns: minmax(0, 0.82fr) minmax(420px, 1.18fr);
       gap: 28px;
       align-items: stretch;
     }
@@ -1171,6 +1171,46 @@
         transition-duration: 0.001ms !important;
       }
     }
+  
+    .library-inline {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .library-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .library-head h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+      font-weight: 950;
+    }
+
+    .hero__visual .chord-grid {
+      max-height: 260px;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+
+    .hero__visual .chord-btn {
+      min-height: 52px;
+      border-radius: 15px;
+      font-size: 17px;
+    }
+
+    .hero__visual .chips {
+      max-height: 82px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
   </style>
 </head>
 
@@ -1237,6 +1277,23 @@
               <button class="preset" type="button" id="soundCheckBtn">Проверить звук</button>
             </div>
           </div>
+
+            <div class="library-inline">
+<div class="library-head">
+              <h2>Библиотека аккордов</h2>
+              <span id="selectedBadge" class="badge">0 выбрано</span>
+            </div>
+
+          <div class="quick-row" aria-label="Быстрые наборы">
+            <button class="preset" type="button" data-preset="all">Все</button>
+            <button class="preset" type="button" data-preset="major">Мажор</button>
+            <button class="preset" type="button" data-preset="minor">Минор</button>
+            <button class="preset" type="button" data-preset="clear">Очистить</button>
+          </div>
+
+          <div id="chordGrid" class="chord-grid" style="margin-top: 16px;"></div>
+          <div id="selectedChips" class="chips"></div>
+            </div>
         </div>
       </div>
     </section>
@@ -1276,7 +1333,7 @@
               <div class="metric__label">показано</div>
             </div>
             <div class="metric">
-              <div id="selectedMetric" class="metric__value">7</div>
+              <div id="selectedMetric" class="metric__value">0</div>
               <div class="metric__label">аккордов</div>
             </div>
             <div class="metric">
@@ -1284,27 +1341,6 @@
               <div class="metric__label">кругов</div>
             </div>
           </div>
-        </div>
-
-        <div class="card">
-          <div class="section-title">
-            <div>
-              <h2>Библиотека аккордов</h2>
-              <p>В случайном режиме выбирается набор. В ручном режиме собирается очередь.</p>
-            </div>
-            <span id="selectedBadge" class="badge">7 выбрано</span>
-          </div>
-
-          <div class="quick-row" aria-label="Быстрые наборы">
-            <button class="preset" type="button" data-preset="all">Все</button>
-            <button class="preset" type="button" data-preset="major">Мажор</button>
-            <button class="preset" type="button" data-preset="minor">Минор</button>
-            <button class="preset" type="button" data-preset="seventh">Септаккорды</button>
-            <button class="preset" type="button" data-preset="clear">Очистить</button>
-          </div>
-
-          <div id="chordGrid" class="chord-grid" style="margin-top: 16px;"></div>
-          <div id="selectedChips" class="chips"></div>
         </div>
       </div>
     </section>
@@ -1328,26 +1364,25 @@
 
   <script>
     const ALL_CHORDS = [
-      "A", "Am", "A7",
-      "B", "Bm", "B7",
-      "C", "Cm", "C7",
-      "D", "Dm", "D7",
-      "E", "Em", "E7",
-      "F", "Fm", "F7",
-      "G", "Gm", "G7"
+      "A", "Am",
+      "B",
+      "C",
+      "D", "Dm",
+      "E", "Em",
+      "F",
+      "G"
     ];
 
     const PRESETS = {
       basic: ["Am", "Dm", "E", "C", "G", "D", "Em"],
       all: ALL_CHORDS,
       major: ["A", "B", "C", "D", "E", "F", "G"],
-      minor: ["Am", "Bm", "Cm", "Dm", "Em", "Fm", "Gm"],
-      seventh: ["A7", "B7", "C7", "D7", "E7", "F7", "G7"],
+      minor: ["Am", "Dm", "Em"],
       clear: []
     };
 
     let mode = "random";
-    let selected = new Set(PRESETS.basic);
+    let selected = new Set();
     let queue = [];
     let sequence = [];
     let sequenceIndex = -1;
@@ -1585,7 +1620,6 @@
         all: "Выбраны все аккорды.",
         major: "Выбраны мажорные аккорды.",
         minor: "Выбраны минорные аккорды.",
-        seventh: "Выбраны септаккорды.",
         clear: "Выбор очищен."
       };
 
